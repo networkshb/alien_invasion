@@ -4,6 +4,7 @@ from pygame.sprite import Group
 
 from setting import Settings
 from ship import Ship
+from alien import Alien
 import game_functions as gf
 
 
@@ -14,18 +15,15 @@ def run_game():
                                       ai_settings.screen_height))
     ship = Ship(ai_settings, screen)
     bullets = Group()
+    alien = Alien(ai_settings, screen)
     pygame.display.set_caption('Alien Invasion')
 
     while True:
         gf.check_event(ai_settings, screen, ship, bullets)
         ship.update()
         bullets.update()
-
-        for bullet in bullets.copy():
-            if bullet.rect.bottom <= 0:
-                bullets.remove(bullet)
+        gf.update_bullets(bullets)
         # print(len(bullets))
-
         gf.update_screen(ai_settings, screen, ship, bullets)
 
 
