@@ -10,12 +10,11 @@ import game_functions as gf
 def run_game():
     pygame.init()
     ai_settings = Settings()
-    screen = pygame.display.set_mode((ai_settings.screen_width,
-                                      ai_settings.screen_height))
+    screen = pygame.display.set_mode((ai_settings.screen_width, ai_settings.screen_height))
     ship = Ship(ai_settings, screen)
     bullets = Group()
     aliens = Group()
-    gf.create_fleet(ai_settings, screen, aliens)
+    gf.create_fleet(ai_settings, screen, ship, aliens)
     pygame.display.set_caption('Alien Invasion')
 
     while True:
