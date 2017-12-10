@@ -71,6 +71,9 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if len(aliens) == 0:
         bullets.empty()
+        print(ai_settings.bullet_speed_factor)
+        ai_settings.increase_speed()
+        print(ai_settings.bullet_speed_factor)
         create_fleet(ai_settings, screen, ship, aliens)
 
 def fire_bullet(ai_settings, screen, ship, bullets):
@@ -145,6 +148,7 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
         sleep(1)
     else:
         stats.game_active = False
+        ai_settings.initialize_dynamic_settings()
         pygame.mouse.set_visible(True)
 
 
