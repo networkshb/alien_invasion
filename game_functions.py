@@ -4,6 +4,7 @@ from time import sleep
 
 from bullet import Bullet
 from alien import Alien
+from reward import LifeReward
 
 def check_keydown_events(event, ai_settings, screen, ship, bullets):
     if event.key == pygame.K_RIGHT:
@@ -53,18 +54,22 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bul
         create_fleet(ai_settings, screen, ship, aliens)
         ship.center_ship()
 
-def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button, life_rewards):
     screen.fill(ai_settings.bg_color)
     for bullet in bullets.sprites():
         bullet.draw_bullet()
     ship.blitme()
     aliens.draw(screen)
+    if len(life_rewards) > 0:
+        for life_reward in life_rewards:
+            life_reward.moving()
+            life_reward.blitme()
     sb.show_score()
     if not stats.game_active:
         play_button.draw_button()
     pygame.display.flip()
 
-def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
+def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets,  life_rewards):
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
@@ -73,6 +78,10 @@ def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
     if collisions:
         stats.score += ai_settings.alien_points
         sb.prep_score()
+        if stats.score // 5000 > 0 and stats.score % 5000 == 0:
+            life_reward = LifeReward(ai_settings, screen)
+            life_rewards.add(life_reward)
+
     if len(aliens) == 0:
         bullets.empty()
         print(ai_settings.bullet_speed_factor)
@@ -130,6 +139,16 @@ def update_aliens(ai_settings,stats, screen, ship, aliens, bullets):
         ship_hit(ai_settings,stats, screen, ship, aliens, bullets)
     check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
     aliens.update()
+
+def check_rewards(ship, life_rewards, stats):
+    collide = pygame.sprite.spritecollideany(ship, life_rewards)
+    if collide:
+        stats.ships_left += 1
+        life_rewards.remove(collide)
+        print(life_rewards)
+        print(stats.ships_left)
+
+
 
 def check_fleet_edges(ai_settings, aliens):
     for alien in aliens.sprites():
